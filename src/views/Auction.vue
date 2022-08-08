@@ -39,19 +39,19 @@
             {{ auction.ikan[0].nama_ikan }}
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap text-right">
-            {{ parseFloat(auction.berat_total).toLocaleString('id-ID', { minimumFractionDigits: 2 }) }} kg
+            {{ parseFloat(auction.berat_total).toLocaleString('id-ID', { minimumFractionDigits: 1 }) }} kg
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
             {{ auction.last_bidding_user == null ? '?' : auction.last_bidding_user.full_name }}
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.last_bidding).toLocaleString('id-ID') }}
+            Rp {{ Math.ceil(auction.last_bidding / auction.berat_total).toLocaleString('id-ID') }}
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.min_bidding).toLocaleString('id-ID') }}
+            Rp {{ Math.ceil(auction.min_bidding / auction.berat_total).toLocaleString('id-ID') }}
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.max_bidding).toLocaleString('id-ID') }}
+            Rp {{ Math.ceil(auction.max_bidding / auction.berat_total).toLocaleString('id-ID') }}
           </td>
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap text-right">
             <span :class="auction.status == 1 ? 'text-red-600 font-semibold' : '' ">
@@ -146,12 +146,13 @@ export default {
       if (closed) return 'Selesai'
       if (milliseconds < 0) return '0:00'
 
-      const minutes = Math.floor(milliseconds / 60000);
-      const seconds = Math.round((milliseconds % 60000) / 1000);
+      let seconds = Math.floor(milliseconds / 1000)
+      const hours = Math.floor(seconds / 3600)
+      seconds %= 3600
+      const minutes = Math.floor(seconds / 60)
+      seconds %= 60
 
-      return seconds === 60
-        ? `${minutes + 1}:00`
-        : `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
     },
   },
 }
