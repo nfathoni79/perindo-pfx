@@ -36,7 +36,7 @@
 
       <!-- Mobile: Perindo Nelayan -->
       <div>
-        <img class="px-12 float-right" src="../assets/perindo-pabrik.png" alt="Perindo Pabrik" />
+        <img class="px-12 float-right" src="../assets/perindo-nelayan.png" alt="Perindo Pabrik" />
 
         <p class="mb-4 text-xl lg:text-2xl text-gray-900 font-normal">
           Ingin <span class="text-cyan-600">melelang</span> hasil tangkapan
