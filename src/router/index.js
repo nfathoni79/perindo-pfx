@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 import Base from '../views/Base.vue'
 import Home from '../views/Home.vue'
 import Auction from '../views/Auction.vue'
+import Login from '../views/Login.vue'
 import NotFound from '../views/NotFound.vue'
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
         component: Auction,
       },
     ],
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
   },
   {
     path: '/:catchAll(.*)*',
