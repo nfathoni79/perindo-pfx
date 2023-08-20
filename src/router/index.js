@@ -3,6 +3,7 @@ import Base from '../views/Base.vue'
 import Home from '../views/Home.vue'
 import Auction from '../views/Auction.vue'
 import Login from '../views/Login.vue'
+import Admin from '../views/Admin.vue'
 import NotFound from '../views/NotFound.vue'
 
 const routes = [
@@ -27,6 +28,16 @@ const routes = [
     path: '/login',
     name: 'login',
     component: Login,
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: Admin,
+    beforeEnter: (to, from) => {
+      if (localStorage.getItem('fishonToken') == null) {
+        return { name: 'login' }
+      }
+    },
   },
   {
     path: '/:catchAll(.*)*',
