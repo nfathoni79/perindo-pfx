@@ -9,6 +9,7 @@ import {
   ArrowRightCircleIcon,
   ArrowDownCircleIcon,
   Bars3Icon,
+  TrashIcon,
 } from '@heroicons/vue/24/outline'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid'
 
@@ -18,6 +19,7 @@ import TransactionsDialog from '../components/TransactionsDialog.vue'
 import TransferDialog from '../components/TransferDialog.vue'
 import WithdrawalDialog from '../components/WithdrawalDialog.vue'
 import AuctionDialog from '../components/AuctionDialog.vue'
+import DeleteAuctionDialog from '../components/DeleteAuctionDialog.vue'
 import Spinner from '../components/Spinner.vue'
 
 import AuctionService from '../services/AuctionService'
@@ -30,9 +32,12 @@ const user = ref(null)
 const seaseedUser = ref(null)
 const auctions = ref([])
 
+const selectedAuctionId = ref(null)
+
 // Flags
 const transactionsOpen = ref(false)
 const auctionOpen = ref(false)
+const deleteAuctionOpen = ref(false)
 const transferOpen = ref(false)
 const withdrawalOpen = ref(false)
 const processLoading = ref(false)
@@ -143,6 +148,21 @@ const setTransactionsOpen = (open) => transactionsOpen.value = open
 const setAuctionOpen = (open) => auctionOpen.value = open
 const setTransferOpen = (open) => transferOpen.value = open
 const setWithdrawalOpen = (open) => withdrawalOpen.value = open
+
+/**
+ * Initialize auction ID to delete, then set auction dialog open or close.
+ * @param {Boolean} open - Open or close dialog.
+ * @param {Number} auctionId - ID of auction to be deleted.
+ */
+const setDeleteAuctionOpen = (open, auctionId) => {
+  if (auctionId) {
+    selectedAuctionId.value = auctionId
+  } else {
+    selectedAuctionId.value = null
+  }
+
+  deleteAuctionOpen.value = open
+}
 
 /**
  * Format date time string to Indonesian locale.
@@ -275,10 +295,18 @@ const formatDateTime = (dateTimeString) => {
             {{ formatDateTime(auction.exp_at) }}
           </td>
 
-          <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+          <td class="px-4 py-3">
             <CheckCircleIcon v-if="auction.is_all_done == 1"
               class="h-6 w-6 text-green-600" />
             <XCircleIcon v-else class="h-6 w-6 text-red-600" />
+          </td>
+
+          <td class="px-4 py-3">
+            <AButton v-if="auction.last_bidding_user == null"
+              color="red" :rounded="true"
+              @click="setDeleteAuctionOpen(true, auction.id)">
+              <TrashIcon class="h-4 w-4" />
+            </AButton>
           </td>
         </tr>
       </template>
@@ -292,6 +320,11 @@ const formatDateTime = (dateTimeString) => {
     <AuctionDialog v-if="user?.group?.startsWith('coldstorage')"
       :open="auctionOpen" :storeCode="user?.storeCode"
       @onClose="setAuctionOpen(false)" @onAuctionCreated="getAuctions()" />
+
+    <!-- Delete Auction dialog -->
+    <DeleteAuctionDialog v-if="user?.group?.startsWith('coldstorage')"
+      :open="deleteAuctionOpen" :auctionId="selectedAuctionId"
+      @onClose="setDeleteAuctionOpen(false, null)" @onDelete="getAuctions()" />
 
     <!-- Transfer dialog -->
     <TransferDialog v-if="user?.group == 'headoffice'" :open="transferOpen"

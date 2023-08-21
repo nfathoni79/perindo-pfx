@@ -27,4 +27,7 @@ export default {
   processAuction: () => {
     return apiClient.post('/lelang/v2/auctions/process/')
   },
+  deleteAuction: (id) => {
+    return apiClient.delete(`/lelang/v2/auctions/${id}`)
+  },
 }
