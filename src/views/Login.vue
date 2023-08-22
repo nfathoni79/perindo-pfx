@@ -33,7 +33,7 @@ const submitForm = () => {
             return
           }
 
-          router.push({ name: 'admin' })
+          router.push({ name: 'admin-auction' })
         })
     })
     .catch(error => {

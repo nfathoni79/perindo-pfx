@@ -16,6 +16,12 @@ export default {
   getAdminAuctions(fisherman) {
     return apiClient.get(`/lelang/v2/auctions/pfx/?sort=created&range=month&fisherman=${fisherman}`)
   },
+  getApprovals: () => {
+    return apiClient.get('/seaseed/approvals/')
+  },
+  approveApproval: (userId, approve) => {
+    return apiClient.post(`/seaseed/approvals/${userId}/`, { approve: approve })
+  },
   acceptOsposAuction: (storeCode, osposAuctionId, duration) => {
     const params = new URLSearchParams()
     params.append('store', storeCode)

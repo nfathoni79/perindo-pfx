@@ -1,9 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  UserIcon,
-  PowerIcon,
   PlusIcon,
   Cog6ToothIcon,
   ArrowRightCircleIcon,
@@ -25,10 +23,12 @@ import Spinner from '../components/Spinner.vue'
 import AuctionService from '../services/AuctionService'
 import FishonService from '../services/FishonService'
 
+const props = defineProps({
+  user: Object,
+})
 const router = useRouter()
 
 // Fetched data
-const user = ref(null)
 const seaseedUser = ref(null)
 const auctions = ref([])
 
@@ -53,34 +53,18 @@ const tableHeaders = [
 ]
 
 onMounted(() => {
-  getCurrentUser()
+  if (props.user != null) {
+    getCurrentSeaseedUser()
+    getAuctions()
+  }
 })
 
-/**
- * Get current user, if success, then get current Seaseed user and get auctions.
- */
-const getCurrentUser = () => {
-  FishonService.getCurrentUser()
-    .then(response => {
-      const groups = response.data.data.profil.groups
-      const groupName = groups[0].name
-      const splits = groupName.split('_')
-
-      user.value = {
-        name: response.data.data.profil.full_name,
-        group: groups[0].name,
-        storeCode: splits.length == 2 ? splits[1] : null,
-      }
-
-      getCurrentSeaseedUser()
-      getAuctions()
-    })
-    .catch(error => {
-      if (error.response.status == 401) {
-        router.push({ name: 'login' })
-      }
-    })
-}
+watch(() => props.user, (newUser, oldUser) => {
+  if (newUser != null) {
+    getCurrentSeaseedUser()
+    getAuctions()
+  }
+})
 
 /**
  * Get current Seaseed user, contains Seaseed UUID and balance.
@@ -106,8 +90,8 @@ const getCurrentSeaseedUser = () => {
  * All auctions if the user group is headoffice.
  */
 const getAuctions = () => {
-  let fisherman = user.value.name
-  if (user.value.group == 'headoffice') fisherman = ''
+  let fisherman = props.user.name
+  if (props.user.group == 'headoffice') fisherman = ''
 
   AuctionService.getAdminAuctions(fisherman)
     .then(response => {
@@ -134,14 +118,6 @@ const processAuctions = () => {
     .finally(() => {
       processLoading.value = false
     })
-}
-
-/**
- * Log user out. Remove token from local storage.
- */
-const logout = () => {
-  FishonService.logout()
-  router.push({ name: 'login' })
 }
 
 const setTransactionsOpen = (open) => transactionsOpen.value = open
@@ -175,25 +151,7 @@ const formatDateTime = (dateTimeString) => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
-    <nav class="flex items-center justify-between h-20">
-      <!-- Logo -->
-      <div>
-        <router-link :to="{ name: 'home' }">
-          <img class="h-10" src="../assets/pfx-logo.png" alt="PFX" />
-        </router-link>
-      </div>
-
-      <!-- User info -->
-      <div class="flex items-center gap-2 text-cyan-600 font-semibold">
-        <UserIcon class="h-6 w-6" />
-        <div>{{ user?.name }}</div>
-        <AButton color="red" :rounded="true" @click="logout()">
-          <PowerIcon class="h-4 w-4" />
-        </AButton>
-      </div>
-    </nav>
-
+  <div>
     <!-- Actions section -->
     <div class="mt-8 flex flex-col sm:flex-row items-end sm:justify-between">
       <div class="flex items-end gap-2">
