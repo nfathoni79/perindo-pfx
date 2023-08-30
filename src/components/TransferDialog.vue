@@ -144,7 +144,7 @@ const createTransfer = () => {
             {{ adminCost.toLocaleString('id-ID') }} IDR
           </span>
         </p>
-        <p class="text-gray-800">
+        <p class="text-lg text-gray-800">
           Total:
           <span class="font-semibold">
             {{ (transferAmount + adminCost).toLocaleString('id-ID') }} IDR

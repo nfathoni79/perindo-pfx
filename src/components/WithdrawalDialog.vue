@@ -129,12 +129,20 @@ const createWithdrawal = () => {
         </select>
       </label>
 
-      <p class="text-gray-800">
-        Biaya Admin:
-        <span class="font-semibold">
-          {{ adminCost.toLocaleString('id-ID') }} IDR
-        </span>
-      </p>
+      <div>
+        <p class="text-gray-800">
+          Biaya Admin:
+          <span class="font-semibold">
+            {{ adminCost.toLocaleString('id-ID') }} IDR
+          </span>
+        </p>
+        <p class="text-lg text-gray-800">
+            Total:
+            <span class="font-semibold">
+              {{ (withdrawAmount + adminCost).toLocaleString('id-ID') }} IDR
+            </span>
+        </p>
+      </div>
 
       <p v-if="withdrawalErrorMessage" class="text-red-800">
         {{ withdrawalErrorMessage }}
