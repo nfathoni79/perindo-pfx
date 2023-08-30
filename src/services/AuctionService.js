@@ -10,6 +10,9 @@ const apiClient = axios.create({
 })
 
 export default {
+  getConfig: (key) => {
+    return apiClient.get(`/seaseed/configs/?key=${key}`)
+  },
   getAuctions(sort, search) {
     return apiClient.get(`/lelang/v2/auctions/pfx/?sort=${sort}&search=${search}`)
   },

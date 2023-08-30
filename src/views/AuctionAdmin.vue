@@ -31,6 +31,7 @@ const router = useRouter()
 // Fetched data
 const seaseedUser = ref(null)
 const auctions = ref([])
+const adminCost = ref(0)
 
 const selectedAuctionId = ref(null)
 
@@ -56,6 +57,8 @@ onMounted(() => {
   if (props.user != null) {
     getCurrentSeaseedUser()
     getAuctions()
+    getAdminCost()
+    processCost()
   }
 })
 
@@ -63,6 +66,8 @@ watch(() => props.user, (newUser, oldUser) => {
   if (newUser != null) {
     getCurrentSeaseedUser()
     getAuctions()
+    getAdminCost()
+    processCost()
   }
 })
 
@@ -103,6 +108,19 @@ const getAuctions = () => {
 }
 
 /**
+ * Get admin cost from Seaseed config.
+ */
+const getAdminCost = () => {
+  AuctionService.getConfig('admin_cost')
+    .then(response => {
+      adminCost.value = parseInt(response.data.value)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+}
+
+/**
  * Process all finished auctions.
  */
 const processAuctions = () => {
@@ -118,6 +136,15 @@ const processAuctions = () => {
     .finally(() => {
       processLoading.value = false
     })
+}
+
+/**
+ * Process admin cost of pending withdrawal.
+ */
+const processCost = () => {
+  FishonService.processCost()
+    .then(response => console.log(response.data))
+    .catch(error => console.log(error))
 }
 
 const setTransactionsOpen = (open) => transactionsOpen.value = open
@@ -287,11 +314,13 @@ const formatDateTime = (dateTimeString) => {
     <!-- Transfer dialog -->
     <TransferDialog v-if="user?.group == 'headoffice'" :open="transferOpen"
       :userUuid="seaseedUser != null ? seaseedUser.uuid : null"
+      :adminCost="adminCost"
       @onClose="setTransferOpen(false)"
       @onTransferDone="getCurrentSeaseedUser()" />
 
     <!-- Withdrawal dialog -->
     <WithdrawalDialog v-if="user?.group == 'headoffice'" :open="withdrawalOpen"
+      :adminCost="adminCost"
       @onClose="setWithdrawalOpen(false)" />
   </div>
 </template>

@@ -66,6 +66,7 @@ export default {
     })
   },
   createTransfer: (fromUuid, toUuid, amount) => {
+    setToken()
     const params = new URLSearchParams()
     params.append('from_user_uuid', fromUuid)
     params.append('to_user_uuid', toUuid)
@@ -75,6 +76,7 @@ export default {
     return apiClient.post('/api/seaseed/transfers/', params)
   },
   createWithdrawal: (amount, email, accountNo, bankCode) => {
+    setToken()
     const params = new URLSearchParams()
     params.append('amount', amount)
     params.append('email', email)
@@ -83,4 +85,8 @@ export default {
 
     return apiClient.post('/api/seaseed/withdrawals/', params)
   },
+  processCost: () => {
+    setToken()
+    return apiClient.post('api/seaseed/process/')
+  }
 }

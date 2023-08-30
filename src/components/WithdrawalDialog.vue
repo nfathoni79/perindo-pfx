@@ -9,6 +9,7 @@ import FishonService from '../services/FishonService'
 
 const props = defineProps({
   open: Boolean,
+  adminCost: Number,
 })
 
 const emit = defineEmits(['onClose'])
@@ -127,6 +128,13 @@ const createWithdrawal = () => {
           </option>
         </select>
       </label>
+
+      <p class="text-gray-800">
+        Biaya Admin:
+        <span class="font-semibold">
+          {{ adminCost.toLocaleString('id-ID') }} IDR
+        </span>
+      </p>
 
       <p v-if="withdrawalErrorMessage" class="text-red-800">
         {{ withdrawalErrorMessage }}

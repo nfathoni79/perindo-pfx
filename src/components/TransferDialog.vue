@@ -10,6 +10,7 @@ import FishonService from '../services/FishonService'
 const props = defineProps({
   open: Boolean,
   userUuid: String,
+  adminCost: Number,
 })
 
 const emit = defineEmits(['onClose', 'onTransferDone'])
@@ -124,7 +125,10 @@ const createTransfer = () => {
         </select>
 
         <p v-if="coldStorageUuid != null" class="text-gray-800">
-          Saldo: {{ coldStorageBalance.toLocaleString('id-ID') }} IDR
+          Saldo:
+          <span class="font-semibold">
+            {{ coldStorageBalance.toLocaleString('id-ID') }} IDR
+          </span>
         </p>
       </label>
 
@@ -133,6 +137,19 @@ const createTransfer = () => {
         <input type="number" v-model="transferAmount" min="0" required
           class="block w-full border border-gray-400 rounded-lg shadow-sm
           px-4 py-2 text-gray-800 focus:ring-cyan-600" />
+
+        <p class="text-gray-800">
+          Biaya Admin:
+          <span class="font-semibold">
+            {{ adminCost.toLocaleString('id-ID') }} IDR
+          </span>
+        </p>
+        <p class="text-gray-800">
+          Total:
+          <span class="font-semibold">
+            {{ (transferAmount + adminCost).toLocaleString('id-ID') }} IDR
+          </span>
+        </p>
       </label>
 
       <p v-if="transferErrorMessage" class="text-red-800">
