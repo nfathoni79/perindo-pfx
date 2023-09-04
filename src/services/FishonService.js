@@ -58,10 +58,11 @@ export default {
     setToken()
     return apiClient.get('/api/seaseed/transactions/')
   },
-  createAuction: (storeCode, fishToSell) => {
+  createAuction: (storeCode, group, fishToSell) => {
     setToken()
     return apiClient. post('/api/jual/', {
       store: storeCode,
+      group: group,
       data: fishToSell,
     })
   },

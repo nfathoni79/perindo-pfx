@@ -20,6 +20,7 @@ const fishList = ref([])
 
 // Form fields
 const fishId = ref(null)
+const group = ref(null)
 const weight = ref(1)
 const duration = ref(5)
 
@@ -28,6 +29,8 @@ const auctionErrorMessage = ref(null)
 
 // Flags
 const auctionLoading = ref(false)
+
+const groups = ['pemindang', 'pabrik']
 
 onMounted(() => {
   getFishList()
@@ -69,7 +72,7 @@ const createAuction = () => {
     amountOfFish: weight.value,
   }]
 
-  FishonService.createAuction(props.storeCode, fishToSell)
+  FishonService.createAuction(props.storeCode, group.value, fishToSell)
     .then(response => {
       const osposAuctionId = response.data.ospos_auction_id
 
@@ -98,6 +101,14 @@ const createAuction = () => {
       auctionLoading.value = false
     })
 }
+
+/**
+ * Capitalize the first letter of text.
+ * @param {String} text - Text to be capitalized.
+ */
+const capitalize = (text) => {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
 </script>
 
 <template>
@@ -114,6 +125,17 @@ const createAuction = () => {
           px-4 py-2 text-gray-800 focus:ring-cyan-600">
           <option v-for="fish in fishList" :value="fish.id">
             {{ fish.name }}
+          </option>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="text-gray-800">Jenis Penawar</span>
+        <select v-model="group" required
+          class="block w-full border border-gray-400 rounded-lg shadow-sm
+          px-4 py-2 text-gray-800 focus:ring-cyan-600">
+          <option v-for="item in groups" :value="item">
+            {{ capitalize(item) }}
           </option>
         </select>
       </label>
