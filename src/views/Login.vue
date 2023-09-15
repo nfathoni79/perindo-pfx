@@ -19,7 +19,22 @@ const submitForm = () => {
   FishonService.login(username.value, password.value)
     .then(response => {
       localStorage.setItem('fishonToken', response.data.access_token)
-      router.push({ name: 'auction' })
+
+      FishonService.getCurrentUser()
+        .then(response => {
+          const groups = response.data.data.profil.groups
+          const allowedGroups = groups.filter(group => {
+            return group.name.startsWith('coldstorage') || group.name == 'headoffice'
+          })
+
+          if (allowedGroups.length < 1) {
+            localStorage.removeItem('fishonToken')
+            errorMessage.value = 'Unauthorized'
+            return
+          }
+
+          router.push({ name: 'admin-auction' })
+        })
     })
     .catch(error => {
       if (error.response.status == 400) {

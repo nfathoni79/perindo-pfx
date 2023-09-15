@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -6,11 +7,16 @@ import {
   TransitionChild,
 } from '@headlessui/vue'
 
-defineProps({
+const props = defineProps({
   open: Boolean,
+  large: Boolean,
 })
 
 defineEmits(['onClose'])
+
+const maxWidthClass = computed(() => {
+  return props.large ? 'sm:max-w-4xl' : 'sm:max-w-lg'
+})
 </script>
 
 <template>
@@ -38,9 +44,10 @@ defineEmits(['onClose'])
             leave-from="opacity-100 translate-y-0 sm:scale-100"
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
 
-            <DialogPanel class="sm:my-8 relative sm:w-full sm:max-w-lg
-              rounded-lg shadow-xl overflow-hidden
-              bg-white text-left transition-all">
+            <DialogPanel :class="['sm:my-8 relative sm:w-full',
+              'rounded-lg shadow-xl overflow-hidden',
+              'bg-white text-left transition-all',
+              maxWidthClass]">
 
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6">
                 <slot></slot>

@@ -2,18 +2,9 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import NProgress from 'nprogress'
-import { PlusIcon } from '@heroicons/vue/24/solid'
-import {
-  DialogTitle,
-} from '@headlessui/vue'
 
 import BaseTable from '../components/BaseTable.vue'
-import AButton from '../components/AButton.vue'
-import Spinner from '../components/Spinner.vue'
-import ADialog from '../components/ADialog.vue'
-
 import AuctionService from '../services/AuctionService'
-import FishonService from '../services/FishonService'
 
 const router = useRouter()
 
@@ -25,20 +16,10 @@ const auctionInterval = ref(null)
 
 // Fetched data
 const auctions = ref([])
-const fishList = ref([])
 
 // Form fields
 const sort = ref('time')
 const search = ref('')
-const fish = ref(null)
-const weight = ref(1)
-const duration = ref(5)
-
-// Flags/messages
-const formOpen = ref(false)
-const errorMessage = ref('')
-const loggedIn = ref(false)
-const createAuctionLoading = ref(false)
 
 const tableHeaders = [
   'Jenis Ikan',
@@ -57,7 +38,6 @@ const formattedCurrentDate = computed(() => {
 
 onMounted(() => {
   getAuctions()
-  getFishList()
 
   countdownInterval.value = setInterval(() => {
     currentDate.value = new Date()
@@ -79,13 +59,11 @@ watch(search, (newValue) => {
     getAuctions(sort.value, newValue), 1000)
 })
 
-const setFormOpen = (open) => formOpen.value = open
-
 const getAuctions = () => {
   NProgress.start()
   AuctionService.getAuctions(sort.value, search.value)
     .then(response => {
-      auctions.value = response.data.lelang
+      auctions.value = response.data.auctions
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -96,63 +74,6 @@ const getAuctions = () => {
     })
     .finally(() => {
       NProgress.done()
-    })
-}
-
-const getFishList = () => {
-  FishonService.getFishList()
-    .then(response => {
-      loggedIn.value = true
-      fishList.value = []
-      const fishListRaw = response.data
-
-      fishListRaw.forEach(fish => {
-        fishList.value.push({
-          id: fish.id,
-          name: fish.name,
-        })
-      })
-    })
-    .catch(error => {
-      if (error.response.status == 401) {
-        loggedIn.value = false
-      }
-    })
-}
-
-const createAuction = () => {
-  createAuctionLoading.value = true
-  errorMessage.value = ''
-
-  const fishToSell = [{
-    jenis_ikan_id: fish.value,
-    jenis_ikan_name: fishList.value.find(f => f.id == fish.value).name,
-    amountOfFish: weight.value,
-  }]
-
-  FishonService.createAuction(fishToSell)
-    .then(response => {
-      const osposAuctionId = response.data.ospos_auction_id
-
-      AuctionService.acceptOsposAuction(osposAuctionId, duration.value)
-        .then(response => {
-          setFormOpen(false)
-          fish.value = null
-          weight.value = 1
-          duration.value = 5
-        })
-        .catch(error => {
-          errorMessage.value = error.message
-        })
-    })
-    .catch(error => {
-      if (error.response.status == 401) {
-        loggedIn.value = false
-        router.push({ name: 'login' })
-      }
-    })
-    .finally(() => {
-      createAuctionLoading.value = false
     })
 }
 
@@ -175,8 +96,6 @@ const toMinutesSeconds = (milliseconds, closed) => {
 
   return `${hours}:${padMinutes}:${padSeconds}`
 }
-
-const submitForm = () => createAuction()
 </script>
 
 <template>
@@ -211,10 +130,6 @@ const submitForm = () => createAuction()
             class="w-full sm:w-80 border-transparent rounded-lg shadow-lg
             px-4 py-2 text-gray-900 focus:ring-cyan-600" />
         </div>
-
-        <AButton v-if="loggedIn" color="green" @click="setFormOpen(true)">
-          <PlusIcon class="h-6 w-6" />
-        </AButton>
       </div>
     </div>
 
@@ -256,17 +171,17 @@ const submitForm = () => createAuction()
 
           <td class="px-4 py-3 text-sm text-gray-900
             whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.last_bidding / auction.berat_total).toLocaleString('id-ID') }}
+            {{ Math.ceil(auction.last_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900
             whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.min_bidding / auction.berat_total).toLocaleString('id-ID') }}
+            {{ Math.ceil(auction.min_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900
             whitespace-nowrap text-right">
-            Rp {{ Math.ceil(auction.max_bidding / auction.berat_total).toLocaleString('id-ID') }}
+            {{ Math.ceil(auction.max_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900
@@ -278,55 +193,5 @@ const submitForm = () => createAuction()
         </tr>
       </template>
     </BaseTable>
-
-    <ADialog :open="formOpen" @onClose="setFormOpen(false)">
-      <DialogTitle class="mb-4 text-lg text-cyan-700 font-semibold">
-        Buat Lelang
-      </DialogTitle>
-
-      <form @submit.prevent="submitForm()" class="flex flex-col gap-4">
-        <label class="block">
-          <span class="text-gray-800">Jenis Ikan</span>
-          <select name="fish" id="fish" v-model="fish" required
-            class="block w-full border border-gray-400 rounded-lg shadow-sm
-            px-4 py-2 text-gray-800 focus:ring-cyan-600">
-            <option v-for="fish in fishList" :value="fish.id">
-              {{ fish.name }}
-            </option>
-          </select>
-        </label>
-
-        <label class="block">
-          <span class="text-gray-800">Berat (Kg)</span>
-          <input type="number" name="weight" id="weight"
-            v-model="weight" min="0" required
-            class="block w-full border border-gray-400 rounded-lg shadow-sm
-            px-4 py-2 text-gray-800 focus:ring-cyan-600" />
-        </label>
-
-        <label class="block">
-          <span class="text-gray-800">Durasi (menit)</span>
-          <input type="number" name="duration" id="duration"
-            v-model="duration" min="5" required
-            class="block w-full border border-gray-400 rounded-lg shadow-sm
-            px-4 py-2 text-gray-800 focus:ring-cyan-600" />
-        </label>
-
-        <p v-if="errorMessage" class="text-red-800">
-          {{ errorMessage }}
-        </p>
-
-        <div class="flex justify-end gap-2">
-          <AButton type="button" color="black" @click="setFormOpen(false)">
-            Batal
-          </AButton>
-
-          <AButton type="submit" color="green" :disabled="createAuctionLoading">
-            <Spinner v-if="createAuctionLoading" class="mr-2 w-6" />
-            Buat
-          </AButton>
-        </div>
-      </form>
-    </ADialog>
   </div>
 </template>
