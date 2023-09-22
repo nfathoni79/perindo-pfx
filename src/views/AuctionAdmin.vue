@@ -32,6 +32,7 @@ const router = useRouter()
 const seaseedUser = ref(null)
 const auctions = ref([])
 const adminCost = ref(0)
+const durianAdminCost = ref(0)
 
 const selectedAuctionId = ref(null)
 
@@ -114,6 +115,14 @@ const getAdminCost = () => {
   AuctionService.getConfig('admin_cost')
     .then(response => {
       adminCost.value = parseInt(response.data.value)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+
+  AuctionService.getConfig('admin_cost_durianpay')
+  .then(response => {
+      durianAdminCost.value = parseInt(response.data.value)
     })
     .catch(error => {
       console.log(error)
@@ -320,7 +329,7 @@ const formatDateTime = (dateTimeString) => {
 
     <!-- Withdrawal dialog -->
     <WithdrawalDialog v-if="user?.group == 'headoffice'" :open="withdrawalOpen"
-      :adminCost="adminCost"
+      :adminCost="adminCost + durianAdminCost"
       @onClose="setWithdrawalOpen(false)" />
   </div>
 </template>
