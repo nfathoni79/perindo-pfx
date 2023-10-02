@@ -11,7 +11,7 @@
         </h1>
 
         <p class="mb-4 text-lg lg:text-2xl text-gray-900 font-normal">
-          Dengan Perindo Fishery Exchange, kamu bisa melihat status pelelangan
+          Dengan Indonesia Fishery Exchange, kamu bisa melihat status pelelangan
           ikan tanpa harus membuat akun. Cek harga dan penawar ikan terbaru
           mulai dari sekarang.
         </p>
@@ -22,21 +22,21 @@
         </router-link>
       </div>
 
-      <!-- Mobile: Perindo Pabrik -->
+      <!-- Mobile: Perindo Bisnis -->
       <div>
-        <img class="px-12 float-right" src="../assets/perindo-pabrik.png" alt="Perindo Pabrik" />
+        <img class="px-12 float-right" src="../assets/perindo-bisnis.png" alt="Perindo Bisnis" />
 
         <p class="mb-4 text-xl lg:text-2xl text-gray-900 font-normal">
           Ingin <span class="text-cyan-600">berpartisipasi</span> dalam pelelangan?
-          Download aplikasi Perindo Pabrik.
+          Download aplikasi Perindo Bisnis.
         </p>
 
-        <PlaystoreButton href="https://play.google.com/store/apps/details?id=id.dayagagas.perindopabrik" />
+        <PlaystoreButton href="https://play.google.com/store/apps/details?id=id.perindo.perindo_bisnis_flutter" />
       </div>
 
       <!-- Mobile: Perindo Nelayan -->
       <div>
-        <img class="px-12 float-right" src="../assets/perindo-nelayan.png" alt="Perindo Pabrik" />
+        <img class="px-12 float-right" src="../assets/perindo-nelayan.png" alt="Perindo Nelayan" />
 
         <p class="mb-4 text-xl lg:text-2xl text-gray-900 font-normal">
           Ingin <span class="text-cyan-600">melelang</span> hasil tangkapan
@@ -55,7 +55,7 @@
           ikan dalam waktu real time</h1>
 
         <p class="mb-4 text-xl lg:text-2xl text-gray-900 font-normal">
-          Dengan Perindo Fishery Exchange, kamu bisa melihat status pelelangan
+          Dengan Indonesia Fishery Exchange, kamu bisa melihat status pelelangan
           ikan tanpa harus membuat akun. Cek harga dan penawar ikan terbaru
           mulai dari sekarang.
         </p>
@@ -73,19 +73,19 @@
     </div>
 
     <div class="hidden sm:flex sm:items-center">
-      <!-- Left: Perindo Pabrik -->
+      <!-- Left: Perindo Bisnis -->
       <div class="flex-1">
         <p class="mb-4 text-xl lg:text-2xl text-gray-900 font-normal">
           Ingin <span class="text-cyan-600">berpartisipasi</span> dalam pelelangan?
-          Download aplikasi Perindo Pabrik.
+          Download aplikasi Perindo Bisnis.
         </p>
 
-        <PlaystoreButton href="https://play.google.com/store/apps/details?id=id.dayagagas.perindopabrik" />
+        <PlaystoreButton href="https://play.google.com/store/apps/details?id=id.perindo.perindo_bisnis_flutter" />
       </div>
 
-      <!-- Right: Perindo Pabrik logo -->
+      <!-- Right: Perindo Bisnis logo -->
       <div class="flex-1 p-8 pr-0">
-        <img class="float-right" src="../assets/perindo-pabrik.png" alt="Perindo Pabrik" />
+        <img class="float-right" src="../assets/perindo-bisnis.png" alt="Perindo Bisnis" />
       </div>
     </div>
 
