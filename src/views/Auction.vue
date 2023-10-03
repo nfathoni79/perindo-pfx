@@ -157,7 +157,10 @@ const toMinutesSeconds = (milliseconds, closed) => {
 
           <td class="px-4 py-3 text-sm text-gray-900
             font-semibold whitespace-nowrap">
-            {{ auction.ikan[0].nama_ikan }}
+            {{ auction.ikan[0].nama_ikan }}<br>
+            <span class="text-xs font-medium text-gray-600">
+              ({{ auction.group }})
+            </span>
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900
