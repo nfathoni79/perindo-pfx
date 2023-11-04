@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { DialogTitle } from '@headlessui/vue'
 import ADialog from './ADialog.vue'
 import AButton from './AButton.vue'
@@ -30,6 +30,13 @@ const auctionErrorMessage = ref(null)
 // Flags
 const auctionLoading = ref(false)
 
+// Computed data
+const selectedFish = computed(() => {
+  return fishList.value.find(fish => {
+    return fish.id == fishId.value
+  })
+})
+
 const groups = ['pemindang', 'pabrik']
 
 onMounted(() => {
@@ -49,6 +56,8 @@ const getFishList = () => {
         fishList.value.push({
           id: fish.id,
           name: fish.name,
+          minPrice: parseFloat(fish.price),
+          maxPrice: parseFloat(fish.max_price),
         })
       })
     })
@@ -127,6 +136,14 @@ const capitalize = (text) => {
             {{ fish.name }}
           </option>
         </select>
+
+        <p v-if="selectedFish" class="text-gray-800">
+          Harga:
+          <span class="font-semibold">
+            {{ selectedFish.minPrice.toLocaleString('id-ID') }} -
+            {{ selectedFish.maxPrice.toLocaleString('id-ID') }} IDR
+          </span>
+        </p>
       </label>
 
       <label class="block">

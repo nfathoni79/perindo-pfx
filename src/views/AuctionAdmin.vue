@@ -49,8 +49,8 @@ const tableHeaders = [
   'Penjual',
   'Penawar Tertinggi',
   'Jumlah Tawaran',
-  'Waktu Mulai',
-  'Waktu Selesai',
+  'Batas Harga',
+  'Waktu',
   'Diproses',
 ]
 
@@ -282,10 +282,12 @@ const formatDateTime = (dateTimeString) => {
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ formatDateTime(auction.created_at) }}
+            {{ Math.ceil(auction.min_bidding).toLocaleString('id-ID') }} IDR -<br>
+            {{ Math.ceil(auction.max_bidding).toLocaleString('id-ID') }} IDR
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+            {{ formatDateTime(auction.created_at) }} -<br>
             {{ formatDateTime(auction.exp_at) }}
           </td>
 
