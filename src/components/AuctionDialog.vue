@@ -47,7 +47,7 @@ onMounted(() => {
  * Get fish list to sell to an auction.
  */
 const getFishList = () => {
-  FishonService.getFishList()
+  FishonService.getFishList(props.storeCode)
     .then(response => {
       fishList.value = []
       const fishListRaw = response.data
