@@ -6,6 +6,7 @@ import Login from '../views/Login.vue'
 import BaseAdmin from '../views/BaseAdmin.vue'
 import AuctionAdmin from '../views/AuctionAdmin.vue'
 import ApprovalAdmin from '../views/ApprovalAdmin.vue'
+import FishAdmin from '../views/FishAdmin.vue'
 import NotFound from '../views/NotFound.vue'
 
 import FishonService from '../services/FishonService'
@@ -70,6 +71,11 @@ const routes = [
         path: 'approval',
         name: 'admin-approval',
         component: ApprovalAdmin,
+      },
+      {
+        path: 'fish',
+        name: 'admin-fish',
+        component: FishAdmin,
       },
     ],
   },

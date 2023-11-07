@@ -14,6 +14,7 @@ const user = ref(null)
 const navs = [
   { name: 'Auction', routeName: 'admin-auction' },
   { name: 'Approval', routeName: 'admin-approval' },
+  { name: 'Fish', routeName: 'admin-fish' },
 ]
 
 onMounted(() => {

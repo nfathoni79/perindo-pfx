@@ -42,9 +42,26 @@ export default {
     setToken()
     return apiClient.get('api/seaseed/users/current/')
   },
-  getFishList: () => {
+  getFishList: areaCode => {
     setToken()
-    return apiClient.get('/api/log/ikan/?area=PI0010')
+    if (!areaCode) return apiClient.get(`/api/log/ikan/`)
+
+    return apiClient.get(`/api/log/ikan/?area=${areaCode}`)
+  },
+  getPerindoFishList: () => {
+    return apiClient.get(`/api/log/ikan/?area-prefix=PI`)
+  },
+  createFish: fishData => {
+    setToken()
+    return apiClient.post('/api/log/ikan/', fishData)
+  },
+  updateFish: (fishId, fishData) => {
+    setToken()
+    return apiClient.put(`/api/log/ikan/${fishId}/`, fishData)
+  },
+  deleteFish: fishId => {
+    setToken()
+    return apiClient.delete(`/api/log/ikan/${fishId}/`)
   },
   getColdStorageList: () => {
     setToken()
