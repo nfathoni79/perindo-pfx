@@ -15,14 +15,12 @@ const props = defineProps({
 
 const emit = defineEmits(['onClose', 'onFishSubmit'])
 
-// Fetched data
-const fishList = ref([])
-
 // Form fields
 const name = ref(null)
 const minPrice = ref(0)
 const maxPrice = ref(999999)
 const areaCode = ref(null)
+const quantity = ref(0)
 
 // Messages
 const fishErrorMessage = ref(null)
@@ -41,11 +39,13 @@ watch(() => props.fish, (newFish, oldFish) => {
     minPrice.value = newFish.minPrice
     maxPrice.value = newFish.maxPrice
     areaCode.value = newFish.areaCode
+    quantity.value = newFish.quantity
   } else {
     name.value = null
     minPrice.value = 0
     maxPrice.value = 999999
     areaCode.value = null
+    quantity.value = 0
   }
 })
 
@@ -61,6 +61,7 @@ const submitFish = () => {
     price: minPrice.value,
     max_price: maxPrice.value,
     area_code: areaCode.value,
+    quantity: quantity.value,
   }
 
   if (isEdit.value) {
@@ -128,6 +129,13 @@ const submitFish = () => {
             {{ area.name }}
           </option>
         </select>
+      </label>
+
+      <label class="block">
+        <span class="text-gray-800">Stok</span>
+        <input type="number" v-model="quantity" min="0" required
+          class="block w-full border border-gray-400 rounded-lg shadow-sm
+          px-4 py-2 text-gray-800 focus:ring-cyan-600" />
       </label>
 
       <p v-if="fishErrorMessage" class="text-red-800">

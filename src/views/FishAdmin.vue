@@ -7,7 +7,6 @@ import AButton from '../components/AButton.vue'
 import FishDialog from '../components/FishDialog.vue'
 import DeleteFishDialog from '../components/DeleteFishDialog.vue'
 
-import AuctionService from '../services/AuctionService'
 import FishonService from '../services/FishonService'
 
 const props = defineProps({
@@ -19,7 +18,6 @@ const router = useRouter()
 const fishList = ref([])
 
 // Flags
-const approveLoading = ref(false)
 const fishOpen = ref(false)
 const deleteFishOpen = ref(false)
 
@@ -32,6 +30,7 @@ const tableHeaders = [
   'Harga Bawah',
   'Harga Atas',
   'Area',
+  'Stok',
   '',
 ]
 
@@ -73,6 +72,7 @@ watch(() => props.user, (newUser, oldUser) => {
           maxPrice: parseFloat(fish.max_price),
           areaCode: fish.area_code,
           area: areas.find(area => area.code == fish.area_code)?.name,
+          quantity: fish.quantity,
         })
       })
     })
@@ -168,6 +168,11 @@ const setFishOpen = (open, fishId) => {
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
             {{ fish.area }}
+          </td>
+
+          <td class="px-4 py-3 text-sm text-gray-900
+            whitespace-nowrap text-right">
+            {{ fish.quantity.toLocaleString('id-ID') }}
           </td>
 
           <td class="px-4 py-3">
