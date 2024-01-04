@@ -53,12 +53,17 @@ const getFishList = () => {
       const fishListRaw = response.data
 
       fishListRaw.forEach(fish => {
-        fishList.value.push({
-          id: fish.id,
-          name: fish.name,
-          minPrice: parseFloat(fish.price),
-          maxPrice: parseFloat(fish.max_price),
-        })
+        const minPrice = parseFloat(fish.price)
+        const maxPrice = parseFloat(fish.max_price)
+
+        if (minPrice > 0 || maxPrice > 0) {
+          fishList.value.push({
+            id: fish.id,
+            name: fish.name,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+          })
+        }
       })
     })
     .catch(error => {
