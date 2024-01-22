@@ -1,12 +1,9 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
 import NProgress from 'nprogress'
 
 import BaseTable from '../components/BaseTable.vue'
 import AuctionService from '../services/AuctionService'
-
-const router = useRouter()
 
 // Timeout/intervals
 const currentDate = ref(new Date())
@@ -77,10 +74,20 @@ const getAuctions = () => {
     })
 }
 
+/**
+ * Calculate the difference between current time and expired time.
+ * @param {string} expString - Expired time in string.
+ */
 const getRemainingMillis = (expString) => {
   return Date.parse(expString) - currentDate.value.getTime()
 }
 
+/**
+ * Convert milliseconds to minute:second format.
+ * If `closed` is true, it will display text instead.
+ * @param {number} milliseconds - Milliseconds to convert.
+ * @param {boolean} closed - If auction is already closed or not.
+ */
 const toMinutesSeconds = (milliseconds, closed) => {
   if (closed) return 'Selesai'
   if (milliseconds < 0) return '0:00'

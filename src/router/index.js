@@ -12,18 +12,22 @@ import NotFound from '../views/NotFound.vue'
 import FishonService from '../services/FishonService'
 
 /**
- * Check if current user is logged in.
+ * Check if user is logged in or not before entering a route.
+ * @param {*} to - Target route.
+ * @param {*} from - Current route.
+ * @param {*} next - Function to pass the next route.
  */
-const isUserLoggedIn = async () => {
+const checkIfAuthed = async (to, from, next) => {
   if (localStorage.getItem('fishonToken') == null) {
-    return false
+    next({ name: 'login' })
+    return
   }
 
   try {
     await FishonService.getCurrentUser()
-    return true
+    next()
   } catch (error) {
-    return false
+    next({ name: 'login' })
   }
 }
 
@@ -54,13 +58,7 @@ const routes = [
     path: '/admin',
     name: 'admin-base',
     component: BaseAdmin,
-    beforeEnter: async (to, from, next) => {
-      if (await isUserLoggedIn()) {
-        next()
-      } else {
-        next({ name: 'login' })
-      }
-    },
+    beforeEnter: checkIfAuthed,
     children: [
       {
         path: '',

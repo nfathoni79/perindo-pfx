@@ -2,14 +2,18 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+
 import BaseTable from '../components/BaseTable.vue'
 import AButton from '../components/AButton.vue'
 import Spinner from '../components/Spinner.vue'
+
 import AuctionService from '../services/AuctionService'
+import { formatDateTime } from '../utils'
 
 const props = defineProps({
   user: Object,
 })
+
 const router = useRouter()
 
 // Fetched data
@@ -49,8 +53,8 @@ const getApprovals = () => {
 
 /**
  * Approve or reject a pending approval.
- * @param {Number} userId - User ID to be approved.
- * @param {Boolean} approve - Approve or reject.
+ * @param {number} userId - User ID to be approved.
+ * @param {boolean} approve - Approve or reject.
  */
 const approveApproval = (userId, approve) => {
   approveLoading.value = true
@@ -62,15 +66,6 @@ const approveApproval = (userId, approve) => {
     .finally(() => {
       approveLoading.value = false
     })
-}
-
-/**
- * Format date time string to Indonesian locale.
- * @param {string} dateTimeString - date time string.
- */
- const formatDateTime = (dateTimeString) => {
-  return new Date(dateTimeString).toLocaleString(
-    'id-ID', { dateStyle: 'short', timeStyle: 'short' })
 }
 </script>
 

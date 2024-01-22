@@ -85,8 +85,8 @@ watch(() => props.user, (newUser, oldUser) => {
 
 /**
  * Set create or edit fish dialog open or close.
- * @param {Boolean} open - Open or close dialog.
- * @param {Number} fishId - ID of fish to be edited. Set null to clear the selectedFish.
+ * @param {boolean} open - Open or close dialog.
+ * @param {number} fishId - ID of fish to be edited. Set `null` to clear the `selectedFish`.
  */
 const setFishOpen = (open, fishId) => {
   if (fishId) {
@@ -102,8 +102,8 @@ const setFishOpen = (open, fishId) => {
 
 /**
  * Initialize fish ID to delete, then set delete fish dialog open or close.
- * @param {Boolean} open - Open or close dialog.
- * @param {Number} fishId - ID of fish to be deleted.
+ * @param {boolean} open - Open or close dialog.
+ * @param {number} fishId - ID of fish to be deleted.
  */
  const setDeleteFishOpen = (open, fishId) => {
   if (fishId) {

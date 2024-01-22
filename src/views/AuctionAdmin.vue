@@ -22,10 +22,12 @@ import Spinner from '../components/Spinner.vue'
 
 import AuctionService from '../services/AuctionService'
 import FishonService from '../services/FishonService'
+import { formatDateTime } from '../utils'
 
 const props = defineProps({
   user: Object,
 })
+
 const router = useRouter()
 
 // Fetched data
@@ -92,8 +94,8 @@ const getCurrentSeaseedUser = () => {
 
 /**
  * Get auction list in current month.
- * Filtered by user's full name if the user group is coldstorage.
- * All auctions if the user group is headoffice.
+ * Filtered by user's full name if the user group is `coldstorage`.
+ * All auctions if the user group is `headoffice`.
  */
 const getAuctions = () => {
   let fisherman = props.user.name
@@ -163,8 +165,8 @@ const setWithdrawalOpen = (open) => withdrawalOpen.value = open
 
 /**
  * Initialize auction ID to delete, then set auction dialog open or close.
- * @param {Boolean} open - Open or close dialog.
- * @param {Number} auctionId - ID of auction to be deleted.
+ * @param {boolean} open - Open or close dialog.
+ * @param {number} auctionId - ID of auction to be deleted.
  */
 const setDeleteAuctionOpen = (open, auctionId) => {
   if (auctionId) {
@@ -174,15 +176,6 @@ const setDeleteAuctionOpen = (open, auctionId) => {
   }
 
   deleteAuctionOpen.value = open
-}
-
-/**
- * Format date time string to Indonesian locale.
- * @param {string} dateTimeString - date time string.
- */
-const formatDateTime = (dateTimeString) => {
-  return new Date(dateTimeString).toLocaleString(
-    'id-ID', { dateStyle: 'short', timeStyle: 'short' })
 }
 </script>
 
@@ -208,14 +201,14 @@ const formatDateTime = (dateTimeString) => {
           </div>
         </div>
 
-        <!-- Transfer button -->
+        <!-- Transfer button (Head Office only) -->
         <AButton v-if="user?.group == 'headoffice'"
           @click="setTransferOpen(true)">
           <ArrowRightCircleIcon class="mr-2 h-6 w-6" />
           Pindah Saldo
         </AButton>
 
-        <!-- Withdrawal button -->
+        <!-- Withdrawal button (Head Office only) -->
         <AButton v-if="user?.group == 'headoffice'"
           @click="setWithdrawalOpen(true)">
           <ArrowDownCircleIcon class="mr-2 h-6 w-6" />
@@ -224,14 +217,14 @@ const formatDateTime = (dateTimeString) => {
       </div>
 
       <div class="flex gap-2">
-        <!-- Create Auction button -->
+        <!-- Create Auction button (Cold Storage only) -->
         <AButton v-if="user?.group?.startsWith('coldstorage')"
           @click="setAuctionOpen(true)">
           <PlusIcon class="mr-2 h-6 w-6" />
           Buat Lelang
         </AButton>
 
-        <!-- Process Auction button -->
+        <!-- Process Auction button (Head Office only) -->
         <AButton v-if="user?.group == 'headoffice'"
           @click="processAuctions">
           <Cog6ToothIcon v-if="!processLoading" class="mr-2 h-6 w-6" />
