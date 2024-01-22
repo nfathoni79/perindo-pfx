@@ -1,3 +1,22 @@
+<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const navs = [
+  { name: 'Home', routeName: 'home' },
+  { name: 'Live Auction', routeName: 'auction' },
+]
+
+/**
+ * Check if nav menu is active based on the current route.
+ * @param {string} routeName - Nav route name.
+ */
+const isMenuActive = (routeName) => {
+  return route.name.startsWith(routeName)
+}
+</script>
+
 <template>
   <div>
     <nav class="bg-cyan-50">
@@ -13,7 +32,11 @@
           <!-- Right: Navigation -->
           <div>
             <div class="flex space-x-6">
-              <router-link v-for="item in navigation" :key="item.routeName" :to="{ name: item.routeName }" :class="[isMenuActive(item.routeName) ? 'font-semibold underline underline-offset-4 decoration-2' : 'font-medium', 'text-cyan-600' ]">
+              <router-link v-for="item in navs" :key="item.routeName"
+                :to="{ name: item.routeName }"
+                :class="[isMenuActive(item.routeName)
+                ? 'font-semibold underline underline-offset-4 decoration-2'
+                : 'font-medium', 'text-cyan-600']">
                 {{ item.name }}
               </router-link>
             </div>
@@ -25,21 +48,3 @@
     <router-view />
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      navigation: [
-        { name: 'Home', routeName: 'home' },
-        { name: 'Live Auction', routeName: 'auction' },
-      ],
-    }
-  },
-  methods: {
-    isMenuActive(routeName) {
-      return this.$route.name.startsWith(routeName)
-    },
-  },
-}
-</script>

@@ -5,11 +5,13 @@ import {
   UserIcon,
   PowerIcon,
 } from '@heroicons/vue/24/outline'
+
 import AButton from '../components/AButton.vue'
 import FishonService from '../services/FishonService'
 
 const router = useRouter()
 const route = useRoute()
+
 const user = ref(null)
 const navs = [
   { name: 'Auction', routeName: 'admin-auction' },
@@ -54,7 +56,7 @@ onMounted(() => {
 
 /**
  * Check if nav menu active base on the current route.
- * @param {String} routeName - Nav route name.
+ * @param {string} routeName - Nav route name.
  */
 const isMenuActive = (routeName) => {
   return route.name.startsWith(routeName)

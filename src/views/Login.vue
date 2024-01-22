@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import AButton from '../components/AButton.vue'
 import Spinner from '../components/Spinner.vue'
 import FishonService from '../services/FishonService'
@@ -52,8 +53,8 @@ const submitForm = () => {
 <template>
   <div class="mx-auto max-w-md">
     <router-link :to="{ name: 'home' }">
-      <img class="mt-8 mx-auto h-20" src="../assets/pfx-logo.png" alt="PFX" />
-      </router-link>
+      <img src="../assets/pfx-logo.png" alt="PFX" class="mt-8 mx-auto h-20" />
+    </router-link>
 
     <div class="mt-8 rounded-lg shadow-lg bg-white p-6">
       <h1 class="text-xl text-cyan-700 font-semibold">
@@ -64,7 +65,7 @@ const submitForm = () => {
         <label class="block">
           <span class="text-gray-800">Username</span>
           <input type="text" name="username" id="username"
-            v-model="username" required
+            v-model="username" required autofocus
             class="block w-full border border-gray-400 rounded-lg shadow-sm
             px-4 py-2 text-gray-800 focus:ring-cyan-600" />
         </label>
