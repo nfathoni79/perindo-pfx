@@ -7,6 +7,15 @@ const formatDateTime = (dateTimeString) => {
     'id-ID', { dateStyle: 'short', timeStyle: 'short' })
 }
 
+/**
+ * Capitalize the first letter of text.
+ * @param {string} text - Text to be capitalized.
+ */
+const capitalize = (text) => {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
 export {
   formatDateTime,
+  capitalize,
 }
