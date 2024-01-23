@@ -35,6 +35,14 @@ const getAdminAuctions = fisherman => {
 }
 
 /**
+ * Get pending auctions filtered by store/area code.
+ * @param {string} storeCode - Store/area code.
+ */
+const getPendingAuctions = storeCode => {
+  return apiClient.get(`/lelang/v2/auctions/pending/?store=${storeCode}`)
+}
+
+/**
  * Get unapproved users.
  */
 const getApprovals = () => {
@@ -52,17 +60,35 @@ const approveApproval = (userId, approve) => {
 
 /**
  * Accept pending auction in Ospos.
- * @param {string} storeCode - Area code.
+ * @param {string} areaCode - Area code.
  * @param {number} osposAuctionId - ID of the Ospos auction.
  * @param {number} duration - Auction duration in minutes.
+ * @param {string} group - Auction target. Can be `null`.
  */
-const acceptOsposAuction = (storeCode, osposAuctionId, duration) => {
+const acceptOsposAuction = (areaCode, osposAuctionId, duration, group) => {
   const params = new URLSearchParams()
-  params.append('store', storeCode)
+  params.append('store', areaCode)
   params.append('ospos_auction_id', osposAuctionId)
   params.append('minute', duration)
 
+  if (group) {
+    params.append('group', group)
+  }
+
   return apiClient.post('/lelang/v2/auctions/accept/', params)
+}
+
+/**
+ * Reject pending auction in Ospos.
+ * @param {string} areaCode - Area code.
+ * @param {number} osposAuctionId - ID of the Ospos auction.
+ */
+const rejectOsposAuction = (areaCode, osposAuctionId) => {
+  const params = new URLSearchParams()
+  params.append('store', areaCode)
+  params.append('ospos_auction_id', osposAuctionId)
+
+  return apiClient.post('/lelang/v2/auctions/reject/', params)
 }
 
 /**
@@ -84,9 +110,11 @@ export default {
   getConfig,
   getAuctions,
   getAdminAuctions,
+  getPendingAuctions,
   getApprovals,
   approveApproval,
   acceptOsposAuction,
+  rejectOsposAuction,
   processAuction,
   deleteAuction,
 }

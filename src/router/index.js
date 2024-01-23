@@ -7,6 +7,7 @@ import BaseAdmin from '../views/BaseAdmin.vue'
 import AuctionAdmin from '../views/AuctionAdmin.vue'
 import ApprovalAdmin from '../views/ApprovalAdmin.vue'
 import FishAdmin from '../views/FishAdmin.vue'
+import PendingAuctionsAdmin from '../views/PendingAuctionsAdmin.vue'
 import NotFound from '../views/NotFound.vue'
 
 import FishonService from '../services/FishonService'
@@ -75,6 +76,11 @@ const routes = [
         name: 'admin-fish',
         component: FishAdmin,
       },
+      {
+        path: 'pending-auctions',
+        name: 'admin-pending-auctions',
+        component: PendingAuctionsAdmin,
+      }
     ],
   },
   {

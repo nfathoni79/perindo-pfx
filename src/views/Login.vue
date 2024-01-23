@@ -25,7 +25,9 @@ const submitForm = () => {
         .then(response => {
           const groups = response.data.data.profil.groups
           const allowedGroups = groups.filter(group => {
-            return group.name.startsWith('coldstorage') || group.name == 'headoffice'
+            return group.name.startsWith('coldstorage')
+              || group.name == 'headoffice'
+              || group.name == 'etpi'
           })
 
           if (allowedGroups.length < 1) {
@@ -34,7 +36,13 @@ const submitForm = () => {
             return
           }
 
-          router.push({ name: 'admin-auction' })
+          // etpi group: Redirect to pending auctions admin page.
+          // headoffice or coldstorage group: Redirect to auctions admin page.
+          if (allowedGroups[0].name == 'etpi') {
+            router.push({ name: 'admin-pending-auctions'})
+          } else {
+            router.push({ name: 'admin-auction' })
+          }
         })
     })
     .catch(error => {

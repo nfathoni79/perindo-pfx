@@ -58,6 +58,12 @@ const tableHeaders = [
 
 onMounted(() => {
   if (props.user != null) {
+    // Redirect to Pending Auction admin page for etpi user.
+    if (props.user.group == 'etpi') {
+      router.push({ name: 'admin-pending-auctions' })
+      return
+    }
+
     getCurrentSeaseedUser()
     getAuctions()
     getAdminCost()
@@ -67,6 +73,12 @@ onMounted(() => {
 
 watch(() => props.user, (newUser, oldUser) => {
   if (newUser != null) {
+    // Redirect to Pending Auction admin page for etpi user.
+    if (props.user.group == 'etpi') {
+      router.push({ name: 'admin-pending-auctions' })
+      return
+    }
+
     getCurrentSeaseedUser()
     getAuctions()
     getAdminCost()
@@ -166,7 +178,7 @@ const setWithdrawalOpen = (open) => withdrawalOpen.value = open
 /**
  * Initialize auction ID to delete, then set auction dialog open or close.
  * @param {boolean} open - Open or close dialog.
- * @param {number} auctionId - ID of auction to be deleted.
+ * @param {number} auctionId - ID of auction to be deleted. Can be `null`.
  */
 const setDeleteAuctionOpen = (open, auctionId) => {
   if (auctionId) {
