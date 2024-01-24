@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   UserIcon,
@@ -13,11 +13,25 @@ const router = useRouter()
 const route = useRoute()
 
 const user = ref(null)
-const navs = [
-  { name: 'Auction', routeName: 'admin-auction' },
-  { name: 'Approval', routeName: 'admin-approval' },
-  { name: 'Fish', routeName: 'admin-fish' },
-]
+
+const navs = computed(() => {
+  if (user.value?.group == 'headoffice') {
+    return [
+      { name: 'Auction', routeName: 'admin-auction' },
+      { name: 'Approval', routeName: 'admin-approval' },
+      { name: 'Fish', routeName: 'admin-fish' },
+    ]
+  }
+
+  if (user.value?.group == 'etpi') {
+    return [
+      { name: 'Pending', routeName: 'admin-pending-auctions' },
+      { name: 'Running', routeName: 'admin-auction' },
+    ]
+  }
+
+  return []
+})
 
 onMounted(() => {
   getCurrentUser()
@@ -73,8 +87,8 @@ const isMenuActive = (routeName) => {
         </router-link>
       </div>
 
-      <!-- Navs -->
-      <div v-if="user?.group == 'headoffice'" class="flex gap-4">
+      <!-- Head Office or E-TPI Navs -->
+      <div v-if="navs.length > 0" class="flex gap-4">
         <router-link v-for="nav in navs" :key="nav.routeName"
           :to="{ name: nav.routeName}"
           :class="[isMenuActive(nav.routeName)

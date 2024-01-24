@@ -58,31 +58,25 @@ const tableHeaders = [
 
 onMounted(() => {
   if (props.user != null) {
-    // Redirect to Pending Auction admin page for etpi user.
-    if (props.user.group == 'etpi') {
-      router.push({ name: 'admin-pending-auctions' })
-      return
-    }
-
-    getCurrentSeaseedUser()
     getAuctions()
-    getAdminCost()
-    processCost()
+
+    if (props.user.group != 'etpi') {
+      getCurrentSeaseedUser()
+      getAdminCost()
+      processCost()
+    }
   }
 })
 
 watch(() => props.user, (newUser, oldUser) => {
   if (newUser != null) {
-    // Redirect to Pending Auction admin page for etpi user.
-    if (props.user.group == 'etpi') {
-      router.push({ name: 'admin-pending-auctions' })
-      return
-    }
-
-    getCurrentSeaseedUser()
     getAuctions()
-    getAdminCost()
-    processCost()
+
+    if (props.user.group != 'etpi') {
+      getCurrentSeaseedUser()
+      getAdminCost()
+      processCost()
+    }
   }
 })
 
@@ -111,7 +105,9 @@ const getCurrentSeaseedUser = () => {
  */
 const getAuctions = () => {
   let fisherman = props.user.name
-  if (props.user.group == 'headoffice') fisherman = ''
+  if (props.user.group == 'headoffice' || props.user.group == 'etpi') {
+    fisherman = ''
+  }
 
   AuctionService.getAdminAuctions(fisherman)
     .then(response => {
@@ -196,8 +192,9 @@ const setDeleteAuctionOpen = (open, auctionId) => {
     <!-- Actions section -->
     <div class="mt-8 flex flex-col sm:flex-row items-end sm:justify-between">
       <div class="flex items-end gap-2">
-        <!-- Balance -->
-        <div class="w-full sm:w-auto rounded-lg shadow-lg
+        <!-- Balance (except for E-TPI) -->
+        <div v-if="user?.group != 'etpi'"
+          class="w-full sm:w-auto rounded-lg shadow-lg
           bg-gray-50 px-8 py-4 text-gray-900">
           <p>Saldo Wallet</p>
 
@@ -211,6 +208,11 @@ const setDeleteAuctionOpen = (open, auctionId) => {
               class="h-6 w-6 text-cyan-500 hover:text-cyan-600
               cursor-pointer" />
           </div>
+        </div>
+        <div v-else>
+          <h1 class="mb-2 text-xl font-medium text-gray-800">
+            Lelang Berlangsung
+          </h1>
         </div>
 
         <!-- Transfer button (Head Office only) -->
@@ -302,7 +304,8 @@ const setDeleteAuctionOpen = (open, auctionId) => {
             <XCircleIcon v-else class="h-6 w-6 text-red-600" />
           </td>
 
-          <td v-if="user?.group?.startsWith('coldstorage')" class="px-4 py-3">
+          <td v-if="user?.group?.startsWith('coldstorage') || user?.group == 'etpi'"
+            class="px-4 py-3">
             <AButton v-if="auction.last_bidding_user == null"
               color="red" :rounded="true"
               @click="setDeleteAuctionOpen(true, auction.id)">
@@ -314,7 +317,7 @@ const setDeleteAuctionOpen = (open, auctionId) => {
     </BaseTable>
 
     <!-- Transactions dialog -->
-    <TransactionsDialog :open="transactionsOpen"
+    <TransactionsDialog v-if="user?.group != 'etpi'" :open="transactionsOpen"
       @onClose="setTransactionsOpen(false)" />
 
     <!-- Create Auction dialog -->
@@ -323,7 +326,8 @@ const setDeleteAuctionOpen = (open, auctionId) => {
       @onClose="setAuctionOpen(false)" @onAuctionCreated="getAuctions()" />
 
     <!-- Delete Auction dialog -->
-    <DeleteAuctionDialog v-if="user?.group?.startsWith('coldstorage')"
+    <DeleteAuctionDialog
+      v-if="user?.group?.startsWith('coldstorage') || user?.group == 'etpi'"
       :open="deleteAuctionOpen" :auctionId="selectedAuctionId"
       @onClose="setDeleteAuctionOpen(false, null)" @onDelete="getAuctions()" />
 
