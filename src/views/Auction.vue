@@ -20,11 +20,11 @@ const search = ref('')
 
 const tableHeaders = [
   'Jenis Ikan',
-  'Berat Total',
+  'Penjual',
+  'Area',
   'Penawar Tertinggi',
   'Jumlah Tawaran',
-  'Batas Bawah',
-  'Batas Atas',
+  'Batas Harga',
   'Tenggat Waktu'
 ]
 
@@ -165,14 +165,20 @@ const toMinutesSeconds = (milliseconds, closed) => {
           <td class="px-4 py-3 text-sm text-gray-900
             font-semibold whitespace-nowrap">
             {{ auction.ikan[0].nama_ikan }}<br>
+            <span class="font-medium">
+              {{ parseFloat(auction.berat_total).toLocaleString('id-ID', { minimumFractionDigits: 1 }) }} kg
+            </span><br>
             <span class="text-xs font-medium text-gray-600">
               ({{ auction.group }})
             </span>
           </td>
 
-          <td class="px-4 py-3 text-sm text-gray-900
-            whitespace-nowrap text-right">
-            {{ parseFloat(auction.berat_total).toLocaleString('id-ID', { minimumFractionDigits: 1 }) }} kg
+          <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+            {{ auction.nelayan_name }}
+          </td>
+
+          <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+            {{ auction.wilayah.replace('Perindo ', '') }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
@@ -186,11 +192,7 @@ const toMinutesSeconds = (milliseconds, closed) => {
 
           <td class="px-4 py-3 text-sm text-gray-900
             whitespace-nowrap text-right">
-            {{ Math.ceil(auction.min_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR
-          </td>
-
-          <td class="px-4 py-3 text-sm text-gray-900
-            whitespace-nowrap text-right">
+            {{ Math.ceil(auction.min_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR<br>
             {{ Math.ceil(auction.max_bidding / auction.berat_total).toLocaleString('id-ID') }} IDR
           </td>
 

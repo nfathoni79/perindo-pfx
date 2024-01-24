@@ -272,7 +272,13 @@ const setDeleteAuctionOpen = (open, auctionId) => {
 
           <td class="px-4 py-3 text-sm text-gray-900
             font-semibold whitespace-nowrap">
-            {{ auction.ikan[0].nama_ikan }}
+            {{ auction.ikan[0].nama_ikan }}<br>
+            <span class="font-medium">
+              {{ parseFloat(auction.berat_total).toLocaleString('id-ID', { minimumFractionDigits: 1 }) }} kg
+            </span><br>
+            <span class="text-xs font-medium text-gray-600">
+              ({{ auction.group }})
+            </span>
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
@@ -288,13 +294,14 @@ const setDeleteAuctionOpen = (open, auctionId) => {
             {{ Math.ceil(auction.last_bidding).toLocaleString('id-ID') }} IDR
           </td>
 
-          <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ Math.ceil(auction.min_bidding).toLocaleString('id-ID') }} IDR -<br>
+          <td class="px-4 py-3 text-sm text-gray-900
+            whitespace-nowrap text-right">
+            {{ Math.ceil(auction.min_bidding).toLocaleString('id-ID') }} IDR<br>
             {{ Math.ceil(auction.max_bidding).toLocaleString('id-ID') }} IDR
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ formatDateTime(auction.created_at) }} -<br>
+            {{ formatDateTime(auction.created_at) }}<br>
             {{ formatDateTime(auction.exp_at) }}
           </td>
 
