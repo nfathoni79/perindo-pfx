@@ -5,7 +5,6 @@ import {
   PlusIcon,
   Cog6ToothIcon,
   ArrowRightCircleIcon,
-  ArrowDownCircleIcon,
   Bars3Icon,
   TrashIcon,
 } from '@heroicons/vue/24/outline'
@@ -13,11 +12,10 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid'
 
 import BaseTable from '../components/BaseTable.vue'
 import AButton from '../components/AButton.vue'
-import TransactionsDialog from '../components/TransactionsDialog.vue'
 import TransferDialog from '../components/TransferDialog.vue'
-import WithdrawalDialog from '../components/WithdrawalDialog.vue'
 import AuctionDialog from '../components/AuctionDialog.vue'
 import DeleteAuctionDialog from '../components/DeleteAuctionDialog.vue'
+import BniTransfersDialog from '../components/BniTransfersDialog.vue'
 import Spinner from '../components/Spinner.vue'
 
 import AuctionService from '../services/AuctionService'
@@ -31,19 +29,17 @@ const props = defineProps({
 const router = useRouter()
 
 // Fetched data
-const seaseedUser = ref(null)
 const auctions = ref([])
 const adminCost = ref(0)
-const durianAdminCost = ref(0)
+const bniAccount = ref(null)
 
 const selectedAuctionId = ref(null)
 
 // Flags
-const transactionsOpen = ref(false)
+const bniTransfersOpen = ref(false)
 const auctionOpen = ref(false)
 const deleteAuctionOpen = ref(false)
 const transferOpen = ref(false)
-const withdrawalOpen = ref(false)
 const processLoading = ref(false)
 
 const tableHeaders = [
@@ -61,9 +57,8 @@ onMounted(() => {
     getAuctions()
 
     if (props.user.group != 'etpi') {
-      getCurrentSeaseedUser()
       getAdminCost()
-      processCost()
+      getCurrentBniAccount()
     }
   }
 })
@@ -73,23 +68,19 @@ watch(() => props.user, (newUser, oldUser) => {
     getAuctions()
 
     if (props.user.group != 'etpi') {
-      getCurrentSeaseedUser()
       getAdminCost()
-      processCost()
+      getCurrentBniAccount()
     }
   }
 })
 
 /**
- * Get current Seaseed user, contains Seaseed UUID and balance.
+ * Get current BNI account.
  */
-const getCurrentSeaseedUser = () => {
-  FishonService.getCurrentSeaseedUser()
+ const getCurrentBniAccount = () => {
+  FishonService.getCurrentBniAccount()
     .then(response => {
-      seaseedUser.value = {
-        uuid: response.data.user.user_uuid,
-        balance: response.data.user.balance,
-      }
+      bniAccount.value = response.data.account
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -129,14 +120,6 @@ const getAdminCost = () => {
     .catch(error => {
       console.log(error)
     })
-
-  AuctionService.getConfig('admin_cost_durianpay')
-  .then(response => {
-      durianAdminCost.value = parseInt(response.data.value)
-    })
-    .catch(error => {
-      console.log(error)
-    })
 }
 
 /**
@@ -157,19 +140,9 @@ const processAuctions = () => {
     })
 }
 
-/**
- * Process admin cost of pending withdrawal.
- */
-const processCost = () => {
-  FishonService.processCost()
-    .then(response => console.log(response.data))
-    .catch(error => console.log(error))
-}
-
-const setTransactionsOpen = (open) => transactionsOpen.value = open
+const setBniTransfersOpen = (open) => bniTransfersOpen.value = open
 const setAuctionOpen = (open) => auctionOpen.value = open
 const setTransferOpen = (open) => transferOpen.value = open
-const setWithdrawalOpen = (open) => withdrawalOpen.value = open
 
 /**
  * Initialize auction ID to delete, then set auction dialog open or close.
@@ -196,15 +169,15 @@ const setDeleteAuctionOpen = (open, auctionId) => {
         <div v-if="user?.group != 'etpi'"
           class="w-full sm:w-auto rounded-lg shadow-lg
           bg-gray-50 px-8 py-4 text-gray-900">
-          <p>Saldo Wallet</p>
+          <p>Saldo BNI</p>
 
           <div class="flex items-center gap-2">
             <p class="text-xl font-semibold">
-              {{ seaseedUser ? seaseedUser.balance.toLocaleString('id-ID') : '?' }} IDR
+              {{ bniAccount ? bniAccount.last_balance.toLocaleString('id-ID') : '?' }} IDR
             </p>
 
             <!-- Transactions button -->
-            <Bars3Icon @click="setTransactionsOpen(true)"
+            <Bars3Icon @click="setBniTransfersOpen(true)"
               class="h-6 w-6 text-cyan-500 hover:text-cyan-600
               cursor-pointer" />
           </div>
@@ -220,13 +193,6 @@ const setDeleteAuctionOpen = (open, auctionId) => {
           @click="setTransferOpen(true)">
           <ArrowRightCircleIcon class="mr-2 h-6 w-6" />
           Pindah Saldo
-        </AButton>
-
-        <!-- Withdrawal button (Head Office only) -->
-        <AButton v-if="user?.group == 'headoffice'"
-          @click="setWithdrawalOpen(true)">
-          <ArrowDownCircleIcon class="mr-2 h-6 w-6" />
-          Tarik Saldo
         </AButton>
       </div>
 
@@ -323,9 +289,9 @@ const setDeleteAuctionOpen = (open, auctionId) => {
       </template>
     </BaseTable>
 
-    <!-- Transactions dialog -->
-    <TransactionsDialog v-if="user?.group != 'etpi'" :open="transactionsOpen"
-      @onClose="setTransactionsOpen(false)" />
+    <!-- BNI Transfers dialog -->
+    <BniTransfersDialog v-if="user?.group != 'etpi'" :open="bniTransfersOpen"
+      @onClose="setBniTransfersOpen(false)" />
 
     <!-- Create Auction dialog -->
     <AuctionDialog v-if="user?.group?.startsWith('coldstorage')"
@@ -340,14 +306,9 @@ const setDeleteAuctionOpen = (open, auctionId) => {
 
     <!-- Transfer dialog -->
     <TransferDialog v-if="user?.group == 'headoffice'" :open="transferOpen"
-      :userUuid="seaseedUser != null ? seaseedUser.uuid : null"
+      :accountNo="bniAccount != null ? bniAccount.number : null"
       :adminCost="adminCost"
       @onClose="setTransferOpen(false)"
-      @onTransferDone="getCurrentSeaseedUser()" />
-
-    <!-- Withdrawal dialog -->
-    <WithdrawalDialog v-if="user?.group == 'headoffice'" :open="withdrawalOpen"
-      :adminCost="adminCost + durianAdminCost"
-      @onClose="setWithdrawalOpen(false)" />
+      @onTransferDone="getCurrentBniAccount()" />
   </div>
 </template>

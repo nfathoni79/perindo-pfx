@@ -106,6 +106,32 @@ const deleteAuction = id => {
   return apiClient.delete(`/lelang/v2/auctions/${id}`)
 }
 
+/**
+ * Get Perindo Bisnis users (Pemindang and Pabrik).
+ */
+const getBisnisUsers = () => {
+  return apiClient.get('/user/v2/users/bisnis/')
+}
+
+/**
+ * Get BNI account by number.
+ */
+const getBniAccountByNo = accountNo => {
+  return apiClient.get(`/bni/accounts/?account_no=${accountNo}`)
+}
+
+/**
+ * Update BNI account number of a user.
+ * @param {number} userId User ID.
+ * @param {string} accountNo BNI account number.
+ */
+const updateUserBni = (userId, accountNo) => {
+  const params = new URLSearchParams()
+  params.append('bninum', accountNo)
+
+  return apiClient.put(`/user/v2/users/bni/${userId}/`, params)
+}
+
 export default {
   getConfig,
   getAuctions,
@@ -117,4 +143,7 @@ export default {
   rejectOsposAuction,
   processAuction,
   deleteAuction,
+  getBisnisUsers,
+  getBniAccountByNo,
+  updateUserBni,
 }

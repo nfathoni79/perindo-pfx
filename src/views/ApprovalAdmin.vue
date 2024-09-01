@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { PencilSquareIcon } from '@heroicons/vue/24/outline'
 
 import BaseTable from '../components/BaseTable.vue'
 import AButton from '../components/AButton.vue'
-import Spinner from '../components/Spinner.vue'
+import BniEditDialog from '../components/BniEditDialog.vue'
 
 import AuctionService from '../services/AuctionService'
 import { formatDateTime } from '../utils'
@@ -17,22 +17,26 @@ const props = defineProps({
 const router = useRouter()
 
 // Fetched data
-const approvals = ref([])
+const users = ref([])
 
 // Flags
-const approveLoading = ref(false)
+const bniOpen = ref(false)
+
+// Selected data
+const selectedUser = ref(null)
 
 const tableHeaders = [
   'Username',
   'Nama Lengkap',
   'Nomor Ponsel',
   'Email',
+  'Rekening BNI',
   'Tanggal Daftar',
   '',
 ]
 
 onMounted(() => {
-  getApprovals()
+  getBisnisUsers()
 })
 
 watch(() => props.user, (newUser, oldUser) => {
@@ -42,30 +46,30 @@ watch(() => props.user, (newUser, oldUser) => {
 })
 
 /**
- * Get pending approvals.
+ * Get Perindo Bisnis users to assign BNI account.
  */
-const getApprovals = () => {
-  AuctionService.getApprovals()
+ const getBisnisUsers = () => {
+  AuctionService.getBisnisUsers()
     .then(response => {
-      approvals.value = response.data.approvals
+      users.value = response.data.users
     })
 }
 
 /**
- * Approve or reject a pending approval.
- * @param {number} userId - User ID to be approved.
- * @param {boolean} approve - Approve or reject.
+ * Set edit BNI dialog open or close.
+ * @param {boolean} open - Open or close dialog.
+ * @param {number} userId - ID of user to be edited. Set `null` to clear the `selectedUser`.
  */
-const approveApproval = (userId, approve) => {
-  approveLoading.value = true
+ const setBniOpen = (open, userId) => {
+  if (userId) {
+    selectedUser.value = users.value.find(user => {
+      return user.id == userId
+    })
+  } else if (userId === null) {
+    selectedUser.value = null
+  }
 
-  AuctionService.approveApproval(userId, approve)
-    .then(response => {
-      getApprovals()
-    })
-    .finally(() => {
-      approveLoading.value = false
-    })
+  bniOpen.value = open
 }
 </script>
 
@@ -83,53 +87,55 @@ const approveApproval = (userId, approve) => {
       </template>
 
       <template v-slot:body>
-        <tr v-if="approvals.length <= 0">
+        <tr v-if="users.length <= 0">
           <td colspan="7" class="py-4 text-center">
             Tidak ada user yang menunggu persetujuan.
           </td>
         </tr>
 
-        <tr v-else v-for="(appr, index) in approvals" :key="appr.user.id"
+        <tr v-else v-for="(user, index) in users" :key="user.id"
           :class="index % 2 != 0 ? 'bg-gray-50' : ''">
 
           <td class="px-4 py-3 text-sm text-gray-900
             font-semibold whitespace-nowrap">
-            {{ appr.user.username }}
+            {{ user.username }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ appr.user.full_name }}
+            {{ user.full_name }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ appr.user.phone }}
+            {{ user.phone }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ appr.user.email }}
+            {{ user.email }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-            {{ formatDateTime(appr.created_at) }}
+            {{ user.bninum != '' ? user.bninum : '-' }}
+          </td>
+
+          <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+            {{ formatDateTime(user.date_joined) }}
           </td>
 
           <td class="px-4 py-3">
             <div class="flex gap-2">
-              <AButton color="green" :rounded="true" :disabled="approveLoading"
-                @click="approveApproval(appr.user.id, true)">
-                <Spinner v-if="approveLoading" class="w-4" />
-                <CheckIcon v-else class="h-4 w-4" />
-              </AButton>
-
-              <AButton color="red" :rounded="true" :disabled="approveLoading"
-                @click="approveApproval(appr.user.id, false)">
-                <Spinner v-if="approveLoading" class="w-4" />
-                <XMarkIcon v-else class="h-4 w-4" />
+              <AButton color="blue" :rounded="true"
+                @click="setBniOpen(true, user.id)">
+                <PencilSquareIcon class="h-4 w-4" />
               </AButton>
             </div>
           </td>
         </tr>
       </template>
     </BaseTable>
+
+    <!-- Edit BNI account dialog -->
+    <BniEditDialog
+      :open="bniOpen" :user="selectedUser"
+      @onClose="setBniOpen(false, false)" @onBniSubmit="getBisnisUsers()" />
   </div>
 </template>
