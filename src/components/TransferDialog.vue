@@ -9,7 +9,7 @@ import FishonService from '../services/FishonService'
 
 const props = defineProps({
   open: Boolean,
-  userUuid: String,
+  accountNo: String,
   adminCost: Number,
 })
 
@@ -21,7 +21,7 @@ const coldStorageBalance = ref(0)
 
 // Form fields
 const transferAmount = ref(0)
-const coldStorageUuid = ref(null)
+const coldStorageAccountNo = ref(null)
 
 // Messages
 const transferErrorMessage = ref(null)
@@ -37,14 +37,14 @@ onMounted(() => {
  * Get Cold Storage user list.
  */
 const getColdStorageList = () => {
-  FishonService.getColdStorageList()
+  FishonService.getBniColdStorageList()
     .then(response => {
       coldStorageList.value = []
       const coldStorageListRaw = response.data.users
 
       coldStorageListRaw.forEach(user => {
         coldStorageList.value.push({
-          uuid: user.user_uuid,
+          bninum: user.bninum,
           name: user.full_name,
         })
       })
@@ -57,14 +57,15 @@ const getColdStorageList = () => {
 }
 
 /**
- * Get Cold Storage user's balance.
+ * Get Cold Storage BNI balance.
  */
 const getColdStorageBalance = () => {
   coldStorageBalance.value = 0
+  transferErrorMessage.value = null
 
-  FishonService.getSeaseedUser(coldStorageUuid.value)
+  FishonService.getBniAccountByNo(coldStorageAccountNo.value)
     .then(response => {
-      coldStorageBalance.value = response.data.user.balance
+      coldStorageBalance.value = response.data.account.last_balance
       transferAmount.value = coldStorageBalance.value
     })
     .catch(error => {
@@ -79,10 +80,10 @@ const createTransfer = () => {
   transferLoading.value = true
   transferErrorMessage.value = null
 
-  FishonService.createTransfer(coldStorageUuid.value, props.userUuid, transferAmount.value)
+  FishonService.createBniTransfer(coldStorageAccountNo.value, props.accountNo, transferAmount.value)
     .then(response => {
       emit('onClose')
-      coldStorageUuid.value = null
+      coldStorageAccountNo.value = null
       transferAmount.value = 0
 
       emit('onTransferDone')
@@ -115,16 +116,16 @@ const createTransfer = () => {
     <form @submit.prevent="createTransfer()" class="flex flex-col gap-4">
       <label class="block">
         <span class="text-gray-800">Cold Storage</span>
-        <select v-model="coldStorageUuid" required
+        <select v-model="coldStorageAccountNo" required
           @change="getColdStorageBalance()"
           class="block w-full border border-gray-400 rounded-lg shadow-sm
           px-4 py-2 text-gray-800 focus:ring-cyan-600">
-          <option v-for="storage in coldStorageList" :value="storage.uuid">
+          <option v-for="storage in coldStorageList" :value="storage.bninum">
             {{ storage.name }}
           </option>
         </select>
 
-        <p v-if="coldStorageUuid != null" class="text-gray-800">
+        <p v-if="coldStorageAccountNo != null" class="text-gray-800">
           Saldo:
           <span class="font-semibold">
             {{ coldStorageBalance.toLocaleString('id-ID') }} IDR
@@ -161,7 +162,7 @@ const createTransfer = () => {
           Batal
         </AButton>
 
-        <AButton type="submit" :disabled="transferLoading">
+        <AButton type="submit" :disabled="transferLoading || coldStorageBalance <= 0">
           <Spinner v-if="transferLoading" class="mr-2 w-6" />
           Pindah
         </AButton>

@@ -198,6 +198,54 @@ const processCost = () => {
   return apiClient.post('api/seaseed/process/')
 }
 
+/**
+ * Get Cold Storage users list, containing BNI account number.
+ */
+const getBniColdStorageList = () => {
+  setToken()
+  return apiClient.get('/api/user/coldstorage/')
+}
+
+/**
+ * Get current BNI account.
+ */
+const getCurrentBniAccount = () => {
+  setToken()
+  return apiClient.get('api/bni/accounts/')
+}
+
+/**
+ * Get a BNI account by number.
+ */
+const getBniAccountByNo = accountNo => {
+  return apiClient.get(`api/bni/accounts/?account_no=${accountNo}`)
+}
+
+/**
+ * Get current BNI account's transfer history.
+ */
+const getBniTransfers = () => {
+  setToken()
+  return apiClient.get('/api/bni/transfers/')
+}
+
+/**
+ * Create a BNI transfer.
+ * @param {string} fromAccountNo - From account number.
+ * @param {string} toAccountNo - To account number.
+ * @param {number} amount - Amount to transfer.
+ */
+const createBniTransfer = (fromAccountNo, toAccountNo, amount) => {
+  setToken()
+  const params = new URLSearchParams()
+  params.append('from_account_no', fromAccountNo)
+  params.append('to_account_no', toAccountNo)
+  params.append('amount', amount)
+  params.append('remark', 'Kirim Head Office')
+
+  return apiClient.post('/api/bni/transfers/', params)
+}
+
 export default {
   login,
   logout,
@@ -216,4 +264,9 @@ export default {
   createTransfer,
   createWithdrawal,
   processCost,
+  getBniColdStorageList,
+  getCurrentBniAccount,
+  getBniAccountByNo,
+  getBniTransfers,
+  createBniTransfer,
 }
