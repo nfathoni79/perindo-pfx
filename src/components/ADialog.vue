@@ -15,7 +15,7 @@ const props = defineProps({
 defineEmits(['onClose'])
 
 const maxWidthClass = computed(() => {
-  return props.large ? 'sm:max-w-4xl' : 'sm:max-w-lg'
+  return props.large ? 'sm:max-w-5xl' : 'sm:max-w-lg'
 })
 </script>
 

@@ -113,7 +113,7 @@ const getAuctions = () => {
  * Get admin cost from Seaseed config.
  */
 const getAdminCost = () => {
-  AuctionService.getConfig('admin_cost')
+  AuctionService.getConfig('bni_admin_cost')
     .then(response => {
       adminCost.value = parseInt(response.data.value)
     })

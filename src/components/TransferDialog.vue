@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { DialogTitle } from '@headlessui/vue'
 import ADialog from './ADialog.vue'
 import AButton from './AButton.vue'
@@ -21,6 +21,10 @@ const coldStorageBalance = ref(0)
 
 // Form fields
 const transferAmount = ref(0)
+const maxTransferAmount = computed(() => {
+  const max = coldStorageBalance.value - props.adminCost
+  return max < 0 ? 0 : max
+})
 const coldStorageAccountNo = ref(null)
 
 // Messages
@@ -66,9 +70,11 @@ const getColdStorageBalance = () => {
   FishonService.getBniAccountByNo(coldStorageAccountNo.value)
     .then(response => {
       coldStorageBalance.value = response.data.account.last_balance
-      transferAmount.value = coldStorageBalance.value
+      transferAmount.value = coldStorageBalance.value - props.adminCost
     })
     .catch(error => {
+      coldStorageBalance.value = 0
+      transferAmount.value = 0
       transferErrorMessage.value = 'Tidak dapat mengambil saldo.'
     })
 }
@@ -135,7 +141,8 @@ const createTransfer = () => {
 
       <label class="block">
         <span class="text-gray-800">Nominal Kirim (IDR)</span>
-        <input type="number" v-model="transferAmount" min="0" required
+        <input type="number" v-model="transferAmount"
+          min="0" :max="maxTransferAmount" required
           class="block w-full border border-gray-400 rounded-lg shadow-sm
           px-4 py-2 text-gray-800 focus:ring-cyan-600" />
 
