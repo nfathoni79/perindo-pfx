@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { DialogTitle } from '@headlessui/vue'
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid'
 import BaseTable from './BaseTable.vue'
 import ADialog from './ADialog.vue'
 import AButton from './AButton.vue'
@@ -20,6 +21,7 @@ const tableHeaders = [
   'Tanggal',
   'Dari',
   'Ke',
+  'Sukses',
   'Nominal',
 ]
 
@@ -36,12 +38,13 @@ const getBniTransfers = () => {
       transfers.value = []
       const transfersRaw = response.data.transfers
 
-      transfersRaw.forEach(trx => {
+      transfersRaw.forEach(trf => {
         transfers.value.push({
-          fromAccount: trx.from_account.name,
-          toAccount: trx.to_account.name,
-          amount: trx.amount,
-          createdAt: trx.created_at
+          fromAccount: trf.from_account.name,
+          toAccount: trf.to_account.name,
+          amount: trf.amount,
+          status: trf.status,
+          createdAt: trf.created_at
         })
       })
     })
@@ -86,25 +89,31 @@ const formatDateTime = (dateTimeString) => {
           </td>
         </tr>
 
-        <tr v-else v-for="(trx, index) in transfers" :key="index"
+        <tr v-else v-for="(trf, index) in transfers" :key="index"
           :class="index % 2 != 0 ? 'bg-gray-50' : ''">
 
           <td class="px-4 py-3 text-sm text-gray-800
             font-semibold whitespace-nowrap">
-            {{ formatDateTime(trx.createdAt) }}
+            {{ formatDateTime(trf.createdAt) }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-            {{ trx.fromAccount }}
+            {{ trf.fromAccount }}
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-            {{ trx.toAccount }}
+            {{ trf.toAccount }}
+          </td>
+
+          <td class="px-4 py-3">
+            <CheckCircleIcon v-if="trf.status == 1"
+              class="h-6 w-6 text-green-600" />
+            <XCircleIcon v-else class="h-6 w-6 text-red-600" />
           </td>
 
           <td class="px-4 py-3 text-sm text-gray-800
             whitespace-nowrap text-right">
-            {{ trx.amount.toLocaleString('id-ID') }} IDR
+            {{ trf.amount.toLocaleString('id-ID') }} IDR
           </td>
         </tr>
       </template>
